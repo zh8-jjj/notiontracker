@@ -1,0 +1,5 @@
+{
+  "name": "Notion Heatmap Tracker",
+  "description": "A GitHub-style heatmap widget to track study time in Notion.",
+  "requestFramePermissions": []
+}

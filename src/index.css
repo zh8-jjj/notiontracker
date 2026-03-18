@@ -1,0 +1,26 @@
+@import "tailwindcss";
+
+body {
+  background-color: transparent;
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: transparent;
+  }
+}
+
+body::-webkit-scrollbar {
+  display: none; /* Chrome, Safari and Opera */
+}
+
+* {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+*::-webkit-scrollbar {
+  display: none;
+}

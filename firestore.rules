@@ -1,0 +1,55 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: users/{userId}/dailyStats
+    // Document ID: YYYY-MM-DD
+    // Fields:
+    //   - date: string (required) - The date string in YYYY-MM-DD format
+    //   - durationMinutes: number (required) - Total study duration in minutes
+    //   - lastActive: timestamp (required) - The last time the user was active
+    //
+    // ===============================================================
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function hasOnlyAllowedFields(fields) {
+      return request.resource.data.keys().hasOnly(fields);
+    }
+
+    function hasRequiredFields(fields) {
+      return request.resource.data.keys().hasAll(fields);
+    }
+
+    function isValidDateString(dateStr) {
+      return dateStr is string && dateStr.matches("^\\d{4}-\\d{2}-\\d{2}$");
+    }
+
+    function isValidDailyStat() {
+      return hasOnlyAllowedFields(['date', 'durationMinutes', 'lastActive']) &&
+             hasRequiredFields(['date', 'durationMinutes', 'lastActive']) &&
+             isValidDateString(request.resource.data.date) &&
+             request.resource.data.durationMinutes is number &&
+             request.resource.data.durationMinutes >= 0 &&
+             request.resource.data.lastActive is timestamp;
+    }
+
+    match /users/{userId}/dailyStats/{dateString} {
+      // userId is a SHA-256 hash of the user's email.
+      // We allow access without authentication because the hash acts as a secure capability token,
+      // and Anonymous Auth is often blocked in Notion iframes due to third-party cookie restrictions.
+      allow read: if true;
+      allow create: if isValidDailyStat() && request.resource.data.date == dateString;
+      allow update: if isValidDailyStat() && request.resource.data.date == resource.data.date;
+      allow delete: if false;
+    }
+  }
+}

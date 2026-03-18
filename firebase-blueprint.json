@@ -1,0 +1,32 @@
+{
+  "entities": {
+    "DailyStat": {
+      "title": "DailyStat",
+      "description": "Daily study duration for a user",
+      "type": "object",
+      "properties": {
+        "date": {
+          "type": "string",
+          "description": "The date string in YYYY-MM-DD format"
+        },
+        "durationMinutes": {
+          "type": "number",
+          "description": "Total study duration in minutes for the day"
+        },
+        "lastActive": {
+          "type": "timestamp",
+          "description": "The last time the user was active on this day"
+        }
+      },
+      "required": ["date", "durationMinutes", "lastActive"]
+    }
+  },
+  "firestore": {
+    "users/{userId}/dailyStats/{dateString}": {
+      "schema": {
+        "$ref": "#/entities/DailyStat"
+      },
+      "description": "Daily study stats for a specific user"
+    }
+  }
+}
